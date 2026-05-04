@@ -1,0 +1,519 @@
+@if (!isAuthenticated()) {
+  <section class="admin-login">
+    <div class="card">
+      <h1>Admin Login</h1>
+      <p class="muted">
+        Sign in with the admin credentials configured in <code>application.yml</code>.
+      </p>
+      <form [formGroup]="loginForm" (ngSubmit)="submitLogin()" novalidate>
+        <label>
+          <span>Username</span>
+          <input type="text" formControlName="username" autocomplete="username" />
+        </label>
+        <label>
+          <span>Password</span>
+          <input type="password" formControlName="password" autocomplete="current-password" />
+        </label>
+        <button type="submit" [disabled]="loggingIn()">
+          {{ loggingIn() ? 'Signing in…' : 'Sign in' }}
+        </button>
+        @if (loginError()) {
+          <p class="error">{{ loginError() }}</p>
+        }
+      </form>
+    </div>
+  </section>
+} @else {
+  <section class="admin-dashboard">
+    <header class="toolbar">
+      <h1>Admin</h1>
+      <button type="button" class="ghost" (click)="logout()">Sign out</button>
+    </header>
+
+    <nav class="tabs">
+      <button type="button" [ngClass]="{ active: activeTab() === 'messages' }" (click)="switchTab('messages')">
+        Messages
+        @if (unreadCount() > 0) {
+          <span class="badge">{{ unreadCount() }}</span>
+        }
+      </button>
+      <button type="button" [ngClass]="{ active: activeTab() === 'skills' }" (click)="switchTab('skills')">Skills</button>
+      <button type="button" [ngClass]="{ active: activeTab() === 'projects' }" (click)="switchTab('projects')">Projects</button>
+      <button type="button" [ngClass]="{ active: activeTab() === 'experience' }" (click)="switchTab('experience')">Experience</button>
+      <button type="button" [ngClass]="{ active: activeTab() === 'blog' }" (click)="switchTab('blog')">Blog</button>
+      <button type="button" [ngClass]="{ active: activeTab() === 'about' }" (click)="switchTab('about')">About</button>
+      <button type="button" [ngClass]="{ active: activeTab() === 'resume' }" (click)="switchTab('resume')">Resume</button>
+      <button type="button" [ngClass]="{ active: activeTab() === 'identity' }" (click)="switchTab('identity')">Identity</button>
+    </nav>
+
+    <!-- ============= Messages tab ============= -->
+    @if (activeTab() === 'messages') {
+      <div class="tab-pane">
+        <div class="contact-toggle">
+          <div>
+            <strong>Contact form is {{ settings().contactEnabled ? 'ON' : 'OFF' }}</strong>
+            <p class="muted small">
+              {{ settings().contactEnabled
+                ? 'Visitors can submit messages.'
+                : 'Visitors see a notice instead of the form.' }}
+            </p>
+          </div>
+          <button
+            type="button"
+            [ngClass]="{ danger: settings().contactEnabled }"
+            [disabled]="settingsSaving()"
+            (click)="toggleContact()"
+          >
+            {{ settingsSaving()
+              ? 'Saving…'
+              : (settings().contactEnabled ? 'Turn OFF' : 'Turn ON') }}
+          </button>
+        </div>
+
+        <div class="contact-toggle">
+          <div>
+            <strong>Meeting booking is {{ settings().bookingEnabled ? 'ON' : 'OFF' }}</strong>
+            <p class="muted small">
+              {{ settings().bookingEnabled
+                ? 'Visitors see the Cal.com calendar on the contact page.'
+                : 'Calendar is hidden — visitors see a "booking paused" message.' }}
+            </p>
+          </div>
+          <button
+            type="button"
+            [ngClass]="{ danger: settings().bookingEnabled }"
+            [disabled]="settingsSaving()"
+            (click)="toggleBooking()"
+          >
+            {{ settingsSaving()
+              ? 'Saving…'
+              : (settings().bookingEnabled ? 'Turn OFF' : 'Turn ON') }}
+          </button>
+        </div>
+
+        <div class="pane-toolbar">
+          <p class="muted">{{ messages().length }} total · {{ unreadCount() }} unread</p>
+          <button type="button" class="ghost" (click)="refreshMessages()" [disabled]="loadingMessages()">
+            {{ loadingMessages() ? 'Refreshing…' : 'Refresh' }}
+          </button>
+        </div>
+        @if (messageError()) { <p class="error">{{ messageError() }}</p> }
+        @if (!loadingMessages() && messages().length === 0) {
+          <p class="empty">No messages yet.</p>
+        }
+        <ul class="message-list">
+          @for (m of messages(); track m.id) {
+            <li
+              [ngClass]="{ unread: m.readAt === null, expanded: expandedMessageId() === m.id }"
+              (click)="toggleMessage(m.id)"
+            >
+              <div class="row">
+                <div class="meta"><strong>{{ m.name }}</strong><span class="email">&lt;{{ m.email }}&gt;</span></div>
+                <time>{{ m.createdAt | date: 'medium' }}</time>
+              </div>
+              <div class="subject">{{ m.subject }}</div>
+              @if (expandedMessageId() === m.id) {
+                <div class="body">
+                  <p class="message-text">{{ m.message }}</p>
+                  <div class="row-actions">
+                    <a class="ghost" [href]="'mailto:' + m.email + '?subject=Re: ' + m.subject">Reply via email</a>
+                    @if (m.readAt) {
+                      <button type="button" class="ghost" (click)="setRead(m, false, $event)">Mark unread</button>
+                    } @else {
+                      <button type="button" class="ghost" (click)="setRead(m, true, $event)">Mark read</button>
+                    }
+                    <button type="button" class="danger" (click)="deleteMessage(m, $event)">Delete</button>
+                  </div>
+                </div>
+              }
+            </li>
+          }
+        </ul>
+      </div>
+    }
+
+    <!-- ============= Skills tab ============= -->
+    @if (activeTab() === 'skills') {
+      <div class="tab-pane">
+        <form class="form" [formGroup]="skillForm" (ngSubmit)="saveSkill()" novalidate>
+          <h2>{{ skillForm.controls.id.value ? 'Edit skill' : 'Add a skill' }}</h2>
+          <div class="form-row">
+            <label class="grow">
+              <span>Name</span>
+              <input type="text" formControlName="name" placeholder="e.g. Spring Boot" />
+            </label>
+            <label>
+              <span>Category</span>
+              <select formControlName="category">
+                @for (c of skillCategories; track c) { <option [value]="c">{{ c }}</option> }
+              </select>
+            </label>
+            <label class="narrow">
+              <span>Order</span>
+              <input type="number" formControlName="displayOrder" />
+            </label>
+          </div>
+          <div class="form-actions">
+            <button type="submit">{{ skillForm.controls.id.value ? 'Save changes' : 'Add skill' }}</button>
+            @if (skillForm.controls.id.value) {
+              <button type="button" class="ghost" (click)="resetSkillForm()">Cancel</button>
+            }
+          </div>
+          @if (skillError()) { <p class="error">{{ skillError() }}</p> }
+        </form>
+
+        @for (cat of skillCategories; track cat) {
+          <h3 class="group-title">{{ cat }}</h3>
+          <div class="chip-list">
+            @for (s of skills(); track s.id) {
+              @if (s.category === cat) {
+                <div class="chip">
+                  <span class="chip__name">{{ s.name }}</span>
+                  <span class="chip__order">#{{ s.displayOrder }}</span>
+                  <button type="button" class="chip__btn" (click)="editSkill(s)" title="Edit">✎</button>
+                  <button type="button" class="chip__btn danger" (click)="deleteSkill(s)" title="Delete">×</button>
+                </div>
+              }
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ============= Projects tab ============= -->
+    @if (activeTab() === 'projects') {
+      <div class="tab-pane">
+        <form class="form" [formGroup]="projectForm" (ngSubmit)="saveProject()" novalidate>
+          <h2>{{ projectForm.controls.id.value ? 'Edit project' : 'Add a project' }}</h2>
+          <label>
+            <span>Title</span>
+            <input type="text" formControlName="title" placeholder="Project name" />
+          </label>
+          <label>
+            <span>Description</span>
+            <textarea rows="3" formControlName="description" placeholder="What it does, who used it, the impact"></textarea>
+          </label>
+          <label>
+            <span>Tech stack</span>
+            <input type="text" formControlName="techStack" placeholder="Java 17, Spring Boot, Angular, MySQL" />
+          </label>
+          <div class="form-row">
+            <label class="grow">
+              <span>Link URL (optional — usually GitHub repo)</span>
+              <input type="text" formControlName="linkUrl" placeholder="https://github.com/Niral32/your-repo" />
+            </label>
+            <label class="narrow">
+              <span>Display order</span>
+              <input type="number" formControlName="displayOrder" />
+            </label>
+          </div>
+          <div class="form-actions">
+            <button type="submit">{{ projectForm.controls.id.value ? 'Save changes' : 'Add project' }}</button>
+            @if (projectForm.controls.id.value) {
+              <button type="button" class="ghost" (click)="resetProjectForm()">Cancel</button>
+            }
+          </div>
+          @if (projectError()) { <p class="error">{{ projectError() }}</p> }
+        </form>
+
+        @if (!projects().length) { <p class="empty">No projects yet — add one above.</p> }
+        <div class="card-list">
+          @for (p of projects(); track p.id) {
+            <article class="entity-card">
+              <header>
+                <h3>{{ p.title }}</h3>
+                <span class="order">#{{ p.displayOrder }}</span>
+              </header>
+              <p class="muted">{{ p.description }}</p>
+              <p class="tech"><strong>Tech:</strong> {{ p.techStack }}</p>
+              <div class="row-actions">
+                <button type="button" class="ghost" (click)="editProject(p)">Edit</button>
+                <button type="button" class="danger" (click)="deleteProject(p)">Delete</button>
+              </div>
+            </article>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ============= Experience tab ============= -->
+    @if (activeTab() === 'experience') {
+      <div class="tab-pane">
+        <form class="form" [formGroup]="experienceForm" (ngSubmit)="saveExperience()" novalidate>
+          <h2>{{ experienceForm.controls.id.value ? 'Edit experience' : 'Add experience' }}</h2>
+          <div class="form-row">
+            <label class="grow">
+              <span>Role title</span>
+              <input type="text" formControlName="roleTitle" placeholder="Full Stack Java Developer" />
+            </label>
+            <label class="grow">
+              <span>Organization</span>
+              <input type="text" formControlName="organization" placeholder="Company name" />
+            </label>
+          </div>
+          <label>
+            <span>Summary</span>
+            <textarea rows="4" formControlName="summary" placeholder="What you built, the impact, the tech you used"></textarea>
+          </label>
+          <div class="form-row">
+            <label>
+              <span>Start period</span>
+              <input type="text" formControlName="startPeriod" placeholder="2024" />
+            </label>
+            <label>
+              <span>End period</span>
+              <input type="text" formControlName="endPeriod" placeholder="Present" />
+            </label>
+            <label class="narrow">
+              <span>Order</span>
+              <input type="number" formControlName="displayOrder" />
+            </label>
+          </div>
+          <div class="form-actions">
+            <button type="submit">{{ experienceForm.controls.id.value ? 'Save changes' : 'Add experience' }}</button>
+            @if (experienceForm.controls.id.value) {
+              <button type="button" class="ghost" (click)="resetExperienceForm()">Cancel</button>
+            }
+          </div>
+          @if (experienceError()) { <p class="error">{{ experienceError() }}</p> }
+        </form>
+
+        @if (!experiences().length) { <p class="empty">No experience entries yet.</p> }
+        <div class="card-list">
+          @for (e of experiences(); track e.id) {
+            <article class="entity-card">
+              <header>
+                <h3>{{ e.roleTitle }} <span class="muted">— {{ e.organization }}</span></h3>
+                <span class="order">{{ e.startPeriod }} → {{ e.endPeriod }}</span>
+              </header>
+              <p class="muted">{{ e.summary }}</p>
+              <div class="row-actions">
+                <button type="button" class="ghost" (click)="editExperience(e)">Edit</button>
+                <button type="button" class="danger" (click)="deleteExperience(e)">Delete</button>
+              </div>
+            </article>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ============= Blog tab ============= -->
+    @if (activeTab() === 'blog') {
+      <div class="tab-pane">
+        <form class="form" [formGroup]="blogForm" (ngSubmit)="saveBlog()" novalidate>
+          <h2>{{ blogForm.controls.id.value ? 'Edit post' : 'New post' }}</h2>
+          <p class="muted">
+            Write in Markdown. Supports headings (<code>#</code>, <code>##</code>),
+            <code>**bold**</code>, <code>*italics*</code>, <code>[links](url)</code>,
+            <code>`code`</code>, fenced code blocks (<code>```</code>), and dash bullets.
+          </p>
+          <label>
+            <span>Title</span>
+            <input type="text" formControlName="title" placeholder="My first post" />
+          </label>
+          <div class="form-row">
+            <label class="grow">
+              <span>Slug (URL) — leave blank to auto-generate</span>
+              <input type="text" formControlName="slug" placeholder="my-first-post" />
+            </label>
+            <label class="grow">
+              <span>Cover image URL (optional, used if you don't upload below)</span>
+              <input type="text" formControlName="coverUrl" placeholder="https://…" />
+            </label>
+          </div>
+
+          @if (blogForm.controls.id.value) {
+            <div class="cover-row">
+              @if (blogCoverPreview()) {
+                <img class="cover-preview" [src]="blogCoverPreview()" alt="cover preview" />
+              } @else {
+                <div class="cover-preview placeholder">No image yet</div>
+              }
+              <div class="cover-actions">
+                <label class="upload-btn">
+                  <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" (change)="uploadBlogCover($event)" hidden />
+                  {{ blogCoverUploading() ? 'Uploading…' : (blogCoverHas() ? 'Replace cover image' : 'Upload cover image') }}
+                </label>
+                @if (blogCoverHas()) {
+                  <button type="button" class="danger" (click)="clearBlogCover()">Remove uploaded image</button>
+                }
+                @if (blogCoverMessage()) { <p class="success small">{{ blogCoverMessage() }}</p> }
+              </div>
+            </div>
+          } @else {
+            <p class="muted small">Save the post once, then upload a cover image from your computer below.</p>
+          }
+          <label>
+            <span>Excerpt (short blurb shown on the blog list)</span>
+            <input type="text" formControlName="excerpt" placeholder="One-sentence summary" />
+          </label>
+          <label>
+            <span>Content (Markdown)</span>
+            <textarea rows="14" formControlName="contentMarkdown" placeholder="# Hello world&#10;&#10;Write your post here…"></textarea>
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" formControlName="published" />
+            <span>Publish (visitors see this on /blog)</span>
+          </label>
+          <div class="form-actions">
+            <button type="submit">{{ blogForm.controls.id.value ? 'Save changes' : 'Create post' }}</button>
+            @if (blogForm.controls.id.value) {
+              <button type="button" class="ghost" (click)="resetBlogForm()">Cancel</button>
+            }
+          </div>
+          @if (blogError()) { <p class="error">{{ blogError() }}</p> }
+        </form>
+
+        @if (!blogPosts().length) { <p class="empty">No posts yet — write one above.</p> }
+        <div class="card-list">
+          @for (b of blogPosts(); track b.id) {
+            <article class="entity-card">
+              <header>
+                <h3>
+                  {{ b.title }}
+                  @if (!b.publishedAt) { <span class="badge">DRAFT</span> }
+                </h3>
+                <span class="order">♥ {{ b.likeCount }}</span>
+              </header>
+              <p class="muted">{{ b.excerpt }}</p>
+              <p class="tech"><strong>Slug:</strong> /blog/{{ b.slug }}</p>
+              <div class="row-actions">
+                <button type="button" class="ghost" (click)="editBlog(b)">Edit</button>
+                <button type="button" class="danger" (click)="deleteBlog(b)">Delete</button>
+              </div>
+            </article>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ============= Resume tab ============= -->
+    @if (activeTab() === 'resume') {
+      <div class="tab-pane">
+        <div class="form">
+          <h2>Resume PDF</h2>
+          <p class="muted">
+            Upload a PDF, DOC, or DOCX (max 10 MB). The file is stored in your database and served at
+            <code>/api/resume</code>, so visitors of your public Resume page see whatever
+            you upload here.
+          </p>
+
+          @if (resumeInfo().present) {
+            <div class="resume-current">
+              <div>
+                <strong>{{ resumeInfo().filename }}</strong>
+                <span class="muted"> · {{ fmtSize(resumeInfo().sizeBytes) }}</span>
+              </div>
+              <div class="muted small">
+                Uploaded {{ resumeInfo().uploadedAt | date: 'medium' }}
+              </div>
+            </div>
+          } @else {
+            <p class="muted small">No resume uploaded yet.</p>
+          }
+
+          <div class="form-actions resume-actions">
+            <label class="upload-btn">
+              <input type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" (change)="uploadResume($event)" hidden />
+              {{ uploadingResume()
+                ? 'Uploading…'
+                : (resumeInfo().present ? 'Replace file…' : 'Choose file to upload…') }}
+            </label>
+            @if (resumeInfo().present) {
+              <a class="ghost" [href]="resumeUrl()" target="_blank" rel="noopener noreferrer">View current</a>
+              <button type="button" class="danger" (click)="deleteResume()">Delete</button>
+            }
+          </div>
+
+          @if (resumeMessage()) { <p class="success">{{ resumeMessage() }}</p> }
+          @if (resumeError())   { <p class="error">{{ resumeError() }}</p> }
+        </div>
+      </div>
+    }
+
+    <!-- ============= Identity tab ============= -->
+    @if (activeTab() === 'identity') {
+      <div class="tab-pane">
+        <div class="form">
+          <h2>Header identity</h2>
+          <p class="muted">
+            Edit the name and role shown in the navbar. The "Hire {{ settings().ownerName.split(' ')[0] }}"
+            button updates automatically based on your first name.
+          </p>
+
+          <form [formGroup]="identityForm" (ngSubmit)="saveIdentity()" novalidate>
+            <div class="form-row">
+              <label class="grow">
+                <span>Display name</span>
+                <input type="text" formControlName="ownerName" placeholder="Niral Patel" />
+              </label>
+              <label class="grow">
+                <span>Role / title</span>
+                <input type="text" formControlName="ownerTitle" placeholder="Java Full Stack Developer" />
+              </label>
+            </div>
+            <div class="form-actions">
+              <button type="submit" [disabled]="identitySaving()">
+                {{ identitySaving() ? 'Saving…' : 'Save name & title' }}
+              </button>
+            </div>
+            @if (identitySaved()) { <p class="success">Saved!</p> }
+            @if (identityError()) { <p class="error">{{ identityError() }}</p> }
+          </form>
+        </div>
+
+        <div class="form">
+          <h2>Profile photo</h2>
+          <p class="muted">
+            Square JPG, PNG, or WebP works best (max 5 MB). The image appears as a circle in the
+            top-left navbar. Refresh the page after uploading to see the change.
+          </p>
+
+          <div class="identity-photo-row">
+            <img class="identity-photo-preview" [src]="identityPhotoUrl()" alt="Current profile" (error)="$any($event.target).style.display='none'" />
+            <div class="form-actions resume-actions">
+              <label class="upload-btn">
+                <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" (change)="uploadPhoto($event)" hidden />
+                {{ photoUploading() ? 'Uploading…' : 'Choose photo…' }}
+              </label>
+              <button type="button" class="danger" (click)="deletePhoto()">Reset to default</button>
+            </div>
+          </div>
+
+          @if (photoMessage()) { <p class="success">{{ photoMessage() }}</p> }
+          @if (photoError()) { <p class="error">{{ photoError() }}</p> }
+        </div>
+      </div>
+    }
+
+    <!-- ============= About tab ============= -->
+    @if (activeTab() === 'about') {
+      <div class="tab-pane">
+        <form class="form" [formGroup]="aboutForm" (ngSubmit)="saveAbout()" novalidate>
+          <h2>About page content</h2>
+          <p class="muted">
+            This text appears on your public <a routerLink="/about">/about</a> page.
+            Education accepts HTML (e.g. <code>&lt;ul&gt;&lt;li&gt;…&lt;/li&gt;&lt;/ul&gt;</code>).
+          </p>
+          <label>
+            <span>Summary (intro paragraph)</span>
+            <textarea rows="3" formControlName="summary"></textarea>
+          </label>
+          <label>
+            <span>Education (HTML allowed)</span>
+            <textarea rows="4" formControlName="educationHtml"></textarea>
+          </label>
+          <label>
+            <span>What I enjoy building</span>
+            <textarea rows="4" formControlName="passions"></textarea>
+          </label>
+          <div class="form-actions">
+            <button type="submit">Save About</button>
+          </div>
+          @if (aboutSaved()) { <p class="success">Saved!</p> }
+          @if (aboutError()) { <p class="error">{{ aboutError() }}</p> }
+        </form>
+      </div>
+    }
+  </section>
+}

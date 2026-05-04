@@ -1,0 +1,27 @@
+<section class="section">
+  <div class="container">
+    <h1 class="section-title reveal">Skills</h1>
+    <p class="section-subtitle reveal reveal-delay-1">
+      A snapshot of technologies I use across backend services, frontends, databases, and delivery tooling.
+    </p>
+
+    @if (groupedSkills$ | async; as grouped) {
+      <div class="groups">
+        @for (cat of categoryOrder; track cat) {
+          @if (grouped[cat].length) {
+            <section class="group reveal">
+              <h2 class="group__title">{{ categoryLabel[cat] }}</h2>
+              <div class="chips">
+                @for (s of grouped[cat]; track s.id) {
+                  <span class="chip">{{ s.name }}</span>
+                }
+              </div>
+            </section>
+          }
+        }
+      </div>
+    } @else {
+      <p class="muted">Loading skills…</p>
+    }
+  </div>
+</section>

@@ -1,0 +1,285 @@
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  backdrop-filter: blur(14px);
+  background: rgba(10, 22, 40, 0.72);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 72px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.brand__avatar {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  border: 2px solid rgba(37, 99, 235, 0.6);
+  background: linear-gradient(145deg, rgba(37, 99, 235, 0.95), rgba(37, 99, 235, 0.45));
+  flex: 0 0 auto;
+  transition: transform var(--transition), border-color var(--transition);
+}
+
+.brand__avatar:hover {
+  transform: scale(1.05);
+  border-color: var(--accent);
+}
+
+.brand__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  position: absolute;
+  inset: 0;
+}
+
+.brand__avatar-fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  font-size: 0.95rem;
+}
+
+/* Photo lightbox overlay */
+.photo-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: rgba(7, 13, 24, 0.78);
+  backdrop-filter: blur(8px);
+  animation: fade-in 200ms ease;
+  cursor: zoom-out;
+}
+
+.photo-overlay__image {
+  width: min(420px, 80vw);
+  height: min(420px, 80vw);
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid rgba(37, 99, 235, 0.8);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  cursor: default;
+}
+
+.photo-overlay__close {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--white);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.photo-overlay__close:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.brand__text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.brand__name {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brand__role {
+  font-size: 0.82rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.nav__links a {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 8px 6px;
+  border-radius: 10px;
+  transition: color var(--transition), background var(--transition);
+}
+
+.nav__links a:hover {
+  color: var(--text);
+}
+
+.nav__links a.is-active {
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.nav__cta {
+  padding: 10px 14px !important;
+  border: 1px solid rgba(37, 99, 235, 0.55);
+  background: rgba(37, 99, 235, 0.14);
+  color: var(--white) !important;
+}
+
+.nav__cta:hover {
+  background: rgba(37, 99, 235, 0.22) !important;
+}
+
+.nav__admin {
+  font-size: 0.85rem !important;
+  opacity: 0.75;
+}
+
+.nav__admin:hover {
+  opacity: 1;
+}
+
+/* "Hire Me" gets the strongest visual weight in the navbar */
+.nav__hire {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--white) !important;
+}
+
+.nav__hire:hover {
+  background: var(--accent-hover) !important;
+  border-color: var(--accent-hover) !important;
+}
+
+.nav__toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+}
+
+.nav__burger,
+.nav__burger::before,
+.nav__burger::after {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--text);
+  margin: 0 auto;
+  position: relative;
+  transition: transform var(--transition), opacity var(--transition);
+}
+
+.nav__burger::before,
+.nav__burger::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.nav__burger::before {
+  transform: translateY(-6px);
+}
+
+.nav__burger::after {
+  transform: translateY(6px);
+}
+
+.nav--open .nav__burger {
+  background: transparent;
+}
+
+.nav--open .nav__burger::before {
+  transform: rotate(45deg);
+}
+
+.nav--open .nav__burger::after {
+  transform: rotate(-45deg);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 900px) {
+  .nav__toggle {
+    display: grid;
+    place-items: center;
+  }
+
+  .nav__links {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 72px;
+    padding: 14px 20px 18px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(10, 22, 40, 0.96);
+    transform: translateY(-12px);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity var(--transition),
+      transform var(--transition);
+  }
+
+  .nav__links--open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .brand__role {
+    display: none;
+  }
+}

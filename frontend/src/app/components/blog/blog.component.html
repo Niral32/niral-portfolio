@@ -1,0 +1,35 @@
+<section class="section">
+  <div class="container">
+    <h1 class="section-title reveal">Blog</h1>
+    <p class="section-subtitle reveal reveal-delay-1">
+      Notes on Java, Spring Boot, Angular, and the lessons I pick up along the way.
+    </p>
+
+    @if (posts$ | async; as posts) {
+      @if (!posts.length) {
+        <div class="empty-state reveal">
+          <p class="empty-state__title">No posts yet.</p>
+          <p class="muted">Check back soon — new posts coming.</p>
+        </div>
+      }
+
+      <div class="post-grid">
+        @for (p of posts; track p.id) {
+          <a class="post-card reveal" [routerLink]="['/blog', p.slug]">
+            @if (p.coverUrl) {
+              <img [src]="p.coverUrl" [alt]="p.title" class="post-card__cover" />
+            }
+            <h2 class="post-card__title">{{ p.title }}</h2>
+            <p class="post-card__excerpt">{{ p.excerpt }}</p>
+            <div class="post-card__meta">
+              <time>{{ p.publishedAt | date: 'mediumDate' }}</time>
+              <span class="likes">♥ {{ p.likeCount }}</span>
+            </div>
+          </a>
+        }
+      </div>
+    } @else {
+      <p class="muted">Loading…</p>
+    }
+  </div>
+</section>

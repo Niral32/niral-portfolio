@@ -1,0 +1,64 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Setup (first time)",
+      "detail": "Installs Homebrew, Java, Maven, Node, MySQL and seeds the database. Run this once.",
+      "type": "shell",
+      "command": "./setup.sh",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Backend",
+      "detail": "Spring Boot on http://localhost:8080 (MySQL profile)",
+      "type": "shell",
+      "command": "mvn",
+      "args": ["spring-boot:run", "-Dspring-boot.run.profiles=mysql"],
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "spring-boot",
+        "pattern": [{ "regexp": "^()()()()$", "file": 1, "line": 2, "column": 3, "message": 4 }],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Starting PortfolioApplication",
+          "endsPattern": "Started PortfolioApplication"
+        }
+      }
+    },
+    {
+      "label": "Start Frontend",
+      "detail": "Angular dev server on http://localhost:4200",
+      "type": "shell",
+      "command": "npm",
+      "args": ["start"],
+      "options": { "cwd": "${workspaceFolder}/frontend" },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "angular",
+        "pattern": [{ "regexp": "^()()()()$", "file": 1, "line": 2, "column": 3, "message": 4 }],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Initial chunk files",
+          "endsPattern": "compiled successfully"
+        }
+      }
+    },
+    {
+      "label": "Start Everything",
+      "detail": "Runs backend and frontend together. Press the trash-can icon on a terminal panel to stop a process.",
+      "dependsOn": ["Start Backend", "Start Frontend"],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "group": { "kind": "build", "isDefault": true }
+    },
+    {
+      "label": "Stop Everything",
+      "detail": "Force-kills anything on ports 8080 and 4200.",
+      "type": "shell",
+      "command": "lsof -ti tcp:8080 tcp:4200 | xargs kill -9 2>/dev/null; echo Stopped.",
+      "problemMatcher": []
+    }
+  ]
+}

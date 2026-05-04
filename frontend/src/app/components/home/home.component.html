@@ -1,0 +1,142 @@
+<!-- ==================== HERO ==================== -->
+<section class="hero">
+  <div class="container hero__grid">
+    <div class="hero__copy reveal">
+      <p class="eyebrow">Barrie, Ontario · Available for new opportunities</p>
+      <h1 class="hero__title">
+        Hi, I'm <span class="accent">{{ ownerName() }}</span>.
+      </h1>
+      <p class="hero__subtitle">{{ ownerTitle() }}</p>
+      <p class="hero__tagline">
+        I design and ship scalable backend systems with <strong>Java</strong> and <strong>Spring Boot</strong>,
+        wire them up to clean <strong>Angular / React</strong> front-ends, and deploy on
+        <strong>AWS</strong> with proper CI/CD. Three years building secure REST APIs, microservices,
+        and data-driven web apps.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn-primary" routerLink="/contact">Let's chat</a>
+        <a class="btn btn-ghost" routerLink="/projects">View Projects</a>
+        <a class="btn btn-ghost" [href]="resumeUrl" target="_blank" rel="noopener noreferrer">Download Resume</a>
+      </div>
+      <div class="hero__badges">
+        <span class="pill">Spring Boot</span>
+        <span class="pill">Microservices</span>
+        <span class="pill">Hibernate / JPA</span>
+        <span class="pill">Angular</span>
+        <span class="pill">AWS</span>
+        <span class="pill">Docker / CI/CD</span>
+      </div>
+    </div>
+
+    <div class="hero__photo reveal reveal-delay-1">
+      <div class="hero__photo-frame">
+        <img [src]="photoUrl()" [alt]="ownerName()" (error)="onPhotoError($any($event.target))" />
+      </div>
+      <div class="hero__photo-glow" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== STATS ==================== -->
+<section class="stats">
+  <div class="container stats__grid">
+    <div class="stat reveal">
+      <div class="stat__num">3+</div>
+      <div class="stat__label">Years building Java services</div>
+    </div>
+    <div class="stat reveal reveal-delay-1">
+      <div class="stat__num">15+</div>
+      <div class="stat__label">Production-grade tech</div>
+    </div>
+    <div class="stat reveal reveal-delay-2">
+      <div class="stat__num">100%</div>
+      <div class="stat__label">Built end-to-end myself — this site included</div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== WHAT I DO (3 PILLARS) ==================== -->
+<section class="pillars">
+  <div class="container">
+    <h2 class="section-title centered reveal">What I work on</h2>
+    <p class="section-subtitle centered reveal reveal-delay-1">
+      The three layers I'm most comfortable owning — from database to UI to deployment.
+    </p>
+    <div class="pillars__grid">
+      <article class="pillar reveal">
+        <div class="pillar__icon">⚙️</div>
+        <h3>Backend Systems</h3>
+        <p>
+          REST APIs and microservices in Spring Boot, secured with JWT/OAuth 2.0,
+          backed by MySQL or PostgreSQL with optimized Hibernate queries.
+        </p>
+      </article>
+      <article class="pillar reveal reveal-delay-1">
+        <div class="pillar__icon">🎨</div>
+        <h3>Front-end Apps</h3>
+        <p>
+          Responsive Angular and React interfaces that pair cleanly with the
+          backend — from forms to data tables to admin dashboards.
+        </p>
+      </article>
+      <article class="pillar reveal reveal-delay-2">
+        <div class="pillar__icon">☁️</div>
+        <h3>Cloud & DevOps</h3>
+        <p>
+          AWS hosting (EC2, S3, RDS, Lambda), Docker containers,
+          and Jenkins / GitHub Actions pipelines that automate build → test → deploy.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PROJECTS PREVIEW ==================== -->
+<section class="recent">
+  <div class="container">
+    <div class="recent__head">
+      <h2 class="section-title">Recent work</h2>
+      <a routerLink="/projects" class="see-all">See all projects →</a>
+    </div>
+
+    @if (recentProjects$ | async; as projects) {
+      @if (projects.length) {
+        <div class="recent__grid">
+          @for (p of projects; track p.id) {
+            <article class="recent__card reveal">
+              <h3>{{ p.title }}</h3>
+              <p class="recent__desc">{{ p.description }}</p>
+              <div class="recent__tech">{{ p.techStack }}</div>
+              @if (p.linkUrl) {
+                <a class="recent__link" [href]="p.linkUrl" target="_blank" rel="noopener noreferrer">View →</a>
+              }
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="recent__empty reveal">
+          <p>Project highlights coming soon.</p>
+          <p class="muted">In the meantime, <a routerLink="/experience">see my experience</a> or
+            <a href="https://github.com/Niral32" target="_blank" rel="noopener noreferrer">browse the code on GitHub</a>.</p>
+        </div>
+      }
+    }
+  </div>
+</section>
+
+<!-- ==================== CTA ==================== -->
+<section class="cta">
+  <div class="container cta__inner reveal">
+    <div>
+      <h2 class="cta__title">Building something Java-shaped?</h2>
+      <p class="cta__subtitle">
+        I'm open to mid-level full-stack roles in Canada — remote or Ontario-based.
+        Pick a time that works, or send a quick message.
+      </p>
+    </div>
+    <div class="cta__actions">
+      <a class="btn btn-primary" routerLink="/contact">Book a chat</a>
+      <a class="btn btn-ghost" [href]="resumeUrl" target="_blank" rel="noopener noreferrer">Download Resume</a>
+    </div>
+  </div>
+</section>

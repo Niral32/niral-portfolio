@@ -1,0 +1,37 @@
+.groups {
+  display: grid;
+  gap: 18px;
+}
+
+.group {
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(22, 39, 68, 0.55);
+  padding: 18px 18px 16px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.22);
+}
+
+.group__title {
+  margin: 0 0 12px;
+  font-size: 1.05rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chip {
+  border-radius: 999px;
+  padding: 9px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.muted {
+  color: var(--muted);
+}

@@ -1,0 +1,22 @@
+<section class="section">
+  <div class="container">
+    <h1 class="section-title reveal">About Me</h1>
+
+    @if (about$ | async; as about) {
+      <p class="section-subtitle reveal reveal-delay-1">{{ about.summary }}</p>
+
+      <div class="grid reveal reveal-delay-2">
+        <article class="card">
+          <h2>Education</h2>
+          <div [innerHTML]="about.educationHtml"></div>
+        </article>
+        <article class="card">
+          <h2>What I enjoy building</h2>
+          <p>{{ about.passions }}</p>
+        </article>
+      </div>
+    } @else {
+      <p class="section-subtitle">Loading…</p>
+    }
+  </div>
+</section>

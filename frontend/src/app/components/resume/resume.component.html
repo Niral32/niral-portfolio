@@ -1,0 +1,33 @@
+<section class="section">
+  <div class="container narrow">
+    <h1 class="section-title reveal">Resume</h1>
+    <p class="section-subtitle reveal reveal-delay-1">
+      Download my resume for a concise view of education, skills, and project experience.
+    </p>
+
+    <div class="panel reveal reveal-delay-2">
+      <h2>Professional summary</h2>
+      <p>
+        Java / Full Stack Developer based in Barrie, Ontario, with a Computer Engineering degree and a postgraduate
+        diploma in Mobile Solutions Development (Conestoga College). I build scalable backend systems and REST APIs
+        with Spring Boot, integrate Angular frontends, and work confidently with MySQL and PostgreSQL. Comfortable with
+        Docker, AWS basics, Git, Maven, automated testing, and CI/CD fundamentals in team settings.
+      </p>
+      <div class="actions">
+        @switch (status()) {
+          @case ('loading') {
+            <span class="btn btn-ghost" aria-disabled="true">Checking…</span>
+          }
+          @case ('present') {
+            <a class="btn btn-primary" [href]="resumeUrl" target="_blank" rel="noopener noreferrer">View resume (PDF)</a>
+            <a class="btn btn-ghost" [href]="resumeUrl" download>Download</a>
+          }
+          @case ('absent') {
+            <span class="btn btn-ghost" aria-disabled="true">Resume coming soon</span>
+          }
+        }
+        <a class="btn btn-ghost" routerLink="/contact">Contact me</a>
+      </div>
+    </div>
+  </div>
+</section>

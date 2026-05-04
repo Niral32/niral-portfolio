@@ -1,0 +1,41 @@
+<section class="section">
+  <div class="container">
+    <h1 class="section-title reveal">Projects</h1>
+    <p class="section-subtitle reveal reveal-delay-1">
+      Selected work spanning enterprise systems, regulated domains, and full-stack product delivery.
+    </p>
+
+    @if (projects$ | async; as projects) {
+      <div class="card-grid cols-2">
+        @for (p of projects; track p.id) {
+          <article class="project reveal">
+            <h2 class="project__title">{{ p.title }}</h2>
+            <p class="project__desc">{{ p.description }}</p>
+            <div class="project__tech">
+              <span class="label">Tech</span>
+              <span class="value">{{ p.techStack }}</span>
+            </div>
+            @if (p.linkUrl) {
+              <a class="project__link" [href]="p.linkUrl" target="_blank" rel="noopener noreferrer">
+                View Project →
+              </a>
+            }
+          </article>
+        }
+      </div>
+      @if (!projects.length) {
+        <div class="empty-state reveal">
+          <p class="empty-state__title">Project highlights coming soon.</p>
+          <p class="muted">
+            In the meantime, take a look at my code on
+            <a href="https://github.com/Niral32" target="_blank" rel="noopener noreferrer">GitHub</a>
+            or reach out via the
+            <a routerLink="/contact">contact page</a>.
+          </p>
+        </div>
+      }
+    } @else {
+      <p class="muted">Loading projects…</p>
+    }
+  </div>
+</section>

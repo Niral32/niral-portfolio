@@ -1,0 +1,31 @@
+<section class="section">
+  <div class="container">
+    <h1 class="section-title reveal">Experience</h1>
+    <p class="section-subtitle reveal reveal-delay-1">
+      Full Stack Java Developer and internship experience focused on APIs, frontends, databases, quality, and Agile
+      collaboration.
+    </p>
+
+    @if (experience$ | async; as items) {
+      <div class="timeline">
+        @for (e of items; track e.id) {
+          <article class="item reveal">
+            <div class="item__meta">
+              <div class="item__dates">{{ e.startPeriod }} — {{ e.endPeriod }}</div>
+              <div class="item__org">{{ e.organization }}</div>
+            </div>
+            <div class="item__body">
+              <h2 class="item__title">{{ e.roleTitle }}</h2>
+              <p class="item__summary">{{ e.summary }}</p>
+            </div>
+          </article>
+        }
+      </div>
+      @if (!items.length) {
+        <p class="muted">No experience entries returned from the API yet. Seed the database and restart the backend.</p>
+      }
+    } @else {
+      <p class="muted">Loading experience…</p>
+    }
+  </div>
+</section>

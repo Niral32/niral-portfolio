@@ -1,0 +1,42 @@
+# Render.com Blueprint — defines a free Spring Boot web service for the
+# portfolio backend. Database is provisioned separately on Supabase / Neon
+# (free tier, no expiration); set DB_URL etc. as env vars in the Render
+# dashboard or below as `value`.
+#
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: portfolio-backend
+    runtime: docker
+    plan: free
+    region: oregon
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/projects
+    envVars:
+      - key: PORT
+        value: "8080"
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      # ---- Set these in the Render dashboard ----
+      - key: DB_URL
+        sync: false       # paste from Supabase / Neon
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false       # set a strong password in the dashboard
+      - key: MAIL_USERNAME
+        value: niralpatel988@gmail.com
+      - key: MAIL_PASSWORD
+        sync: false       # Gmail app password
+      - key: NOTIFY_EMAIL_TO
+        value: niralpatel988@gmail.com
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false       # paste your Vercel domain(s) here

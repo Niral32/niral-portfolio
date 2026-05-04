@@ -1,0 +1,55 @@
+<header class="nav" [class.nav--open]="menuOpen()">
+  <div class="container nav__inner">
+    <a class="brand" routerLink="/" (click)="closeMenu()">
+      <button
+        type="button"
+        class="brand__avatar"
+        (click)="openPhoto($event)"
+        aria-label="Show profile photo"
+      >
+        <img
+          [src]="photoUrl()"
+          [alt]="ownerName()"
+          (error)="onPhotoError($any($event.target))"
+        />
+      </button>
+      <span class="brand__text">
+        <span class="brand__name">{{ ownerName() }}</span>
+        <span class="brand__role">{{ ownerTitle() }}</span>
+      </span>
+    </a>
+
+    <button class="nav__toggle" type="button" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen()">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="nav__burger"></span>
+    </button>
+
+    <nav class="nav__links" [ngClass]="{ 'nav__links--open': menuOpen() }">
+      <a routerLink="/" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()"
+        >Home</a
+      >
+      <a routerLink="/about" routerLinkActive="is-active" (click)="closeMenu()">About</a>
+      <a routerLink="/skills" routerLinkActive="is-active" (click)="closeMenu()">Skills</a>
+      <a routerLink="/projects" routerLinkActive="is-active" (click)="closeMenu()">Projects</a>
+      <a routerLink="/experience" routerLinkActive="is-active" (click)="closeMenu()">Experience</a>
+      <a routerLink="/resume" routerLinkActive="is-active" (click)="closeMenu()">Resume</a>
+      <a routerLink="/blog" routerLinkActive="is-active" (click)="closeMenu()">Blog</a>
+      <a routerLink="/contact" routerLinkActive="is-active" (click)="closeMenu()">Contact</a>
+      <a routerLink="/contact" routerLinkActive="is-active" class="nav__cta nav__hire" (click)="closeMenu()">Let's chat</a>
+      <a routerLink="/admin" routerLinkActive="is-active" class="nav__admin" (click)="closeMenu()">Admin</a>
+    </nav>
+  </div>
+</header>
+
+@if (photoOpen()) {
+  <div class="photo-overlay" (click)="closePhoto()" role="dialog" aria-modal="true" aria-label="Profile photo">
+    <button type="button" class="photo-overlay__close" (click)="closePhoto()" aria-label="Close">×</button>
+    <img
+      class="photo-overlay__image"
+      [src]="photoUrl()"
+      [alt]="ownerName()"
+      (click)="$event.stopPropagation()"
+      (error)="onPhotoError($any($event.target))"
+    />
+  </div>
+}

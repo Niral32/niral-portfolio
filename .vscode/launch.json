@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Debug Backend (Spring Boot)",
+      "request": "launch",
+      "mainClass": "com.niralpatel.portfolio.PortfolioApplication",
+      "projectName": "portfolio-backend",
+      "args": "--spring.profiles.active=mysql",
+      "cwd": "${workspaceFolder}/backend"
+    },
+    {
+      "type": "chrome",
+      "name": "Open Frontend in Chrome",
+      "request": "launch",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}/frontend/src"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Debug Full Stack",
+      "configurations": ["Debug Backend (Spring Boot)", "Open Frontend in Chrome"],
+      "preLaunchTask": "Start Frontend",
+      "stopAll": true
+    }
+  ]
+}
