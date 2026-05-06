@@ -26,7 +26,8 @@ public class BlogPost {
     /** Markdown source. Rendered to HTML on the client. */
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    @Column(name = "content_markdown", nullable = false, columnDefinition = "MEDIUMTEXT")
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
+    @Column(name = "content_markdown", nullable = false)
     private String contentMarkdown;
 
     @Column(name = "cover_url", length = 500)
