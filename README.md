@@ -1,205 +1,46 @@
 # Niral Patel — Personal Portfolio
 
 > Full-stack personal site I designed, built, and deployed end-to-end.
-> Java / Spring Boot REST API · Angular 19 SPA · PostgreSQL on Supabase · Render + Vercel + GitHub Actions.
+> Java / Spring Boot REST API · Angular 19 SPA · PostgreSQL on Supabase · Render + Vercel.
 
 **🌐 Live site:** [niral-portfolio-five.vercel.app](https://niral-portfolio-five.vercel.app)
-**🔌 Live API:** [portfolio-backend-b0tq.onrender.com/api/skills](https://portfolio-backend-b0tq.onrender.com/api/skills)
 
 ---
 
-## What it does
+## About me
 
-- **Public site** — recruiter-facing pages for About, Skills, Experience, Projects, Blog, Contact, and a Cal.com booking widget.
-- **Admin dashboard** — JWT-secured `/admin` area to add/edit projects, skills, experience, blog posts (with cover image upload), and toggle the contact + booking sections on or off without redeploying.
-- **Contact pipeline** — visitor messages are persisted to Postgres and emailed to me via Spring Mail (Gmail SMTP).
-- **Resume & profile photo** — both stored as BLOBs in Postgres and served through the API.
+Java Full Stack Developer based in Barrie, Ontario — three years building secure REST APIs, microservices, and data-driven web apps with Spring Boot, Angular / React, and AWS. Open to mid-level full-stack roles in Canada (remote or Ontario-based).
+
+📧 [niralpatel988@gmail.com](mailto:niralpatel988@gmail.com) · 💼 [LinkedIn](https://www.linkedin.com/) · 💻 [GitHub](https://github.com/Niral32)
+
+## What this site has
+
+- **About / Skills / Experience** — my background and the technologies I work with day-to-day.
+- **Projects** — selected work with tech stack and links to repos or live demos.
+- **Blog** — short write-ups on things I've built or learned.
+- **Contact** — send me a message directly, or book a 15-minute chat through the integrated calendar.
+- **Resume** — downloadable PDF.
 
 ## Tech stack
 
-| Layer | Stack |
-|-------|-------|
-| Frontend | Angular 19 (standalone components, signals), TypeScript, SCSS |
-| Backend  | Spring Boot 3.2, Spring Security + JWT, Spring Data JPA, Hibernate 6 |
-| Database | PostgreSQL (prod on Supabase) / MySQL (local fallback) |
-| Hosting  | Render (backend, Docker), Vercel (frontend), Supabase (DB) |
-| CI / DevOps | GitHub Actions, Docker, Render Blueprint (`render.yaml`) |
+| Layer | Built with |
+|-------|------------|
+| Frontend | Angular 19, TypeScript, SCSS |
+| Backend  | Spring Boot 3, Spring Security + JWT, Spring Data JPA, Hibernate |
+| Database | PostgreSQL (Supabase) |
+| Hosting  | Render (backend), Vercel (frontend) |
+| Tooling  | Docker, GitHub Actions, Maven |
 
-## Highlights worth a closer look
+## Engineering highlights
 
-- **Cross-database compatibility** — single codebase runs on Postgres or MySQL by switching a Spring profile. Used `@JdbcTypeCode(SqlTypes.LONGVARCHAR)` and `LONGVARBINARY` for portable BLOB/CLOB columns.
-- **Stateless JWT auth** — custom `JwtAuthenticationFilter` with HS256, configurable secret + TTL via env vars.
-- **Pooler-aware JDBC** — disabled server-side prepared statements (`prepareThreshold=0`) for compatibility with Supabase's transaction-mode PgBouncer.
-- **Wildcard CORS for preview deploys** — `setAllowedOriginPatterns` lets every Vercel preview URL hit the API without redeploying.
-- **Zero-cost deploy** — Spring backend on Render free tier kept warm with a 5-min UptimeRobot ping; Angular static build on Vercel.
+A few decisions that show how I think about real-world software:
 
-## Repository layout
+- **Cross-database codebase** — same backend runs on Postgres or MySQL by switching a Spring profile, using portable Hibernate type codes for BLOB / CLOB columns.
+- **Stateless JWT authentication** — custom filter for the `/admin` area, secret + token TTL configurable via environment variables.
+- **Pooler-aware JDBC** — disabled server-side prepared statements so the backend works correctly behind Supabase's transaction-mode connection pooler.
+- **Wildcard CORS for preview deploys** — every Vercel preview URL hits the API without any redeploy.
+- **Zero-cost production deploy** — runs on entirely free tiers (Render + Vercel + Supabase) and stays warm via a 5-minute uptime ping.
 
-```
-niral-portfolio/
-├── README.md                 ← You are here
-├── .gitignore
-├── docs/
-│   └── API.md                ← REST API reference
-├── sql/
-│   ├── schema.sql            ← PostgreSQL DDL
-│   ├── schema-mysql.sql      ← MySQL DDL
-│   ├── sample-data.sql       ← PostgreSQL seed data
-│   └── sample-data-mysql.sql ← MySQL seed data
-├── backend/                  ← Spring Boot (Java 17+)
-│   ├── pom.xml
-│   └── src/main/
-│       ├── java/com/niralpatel/portfolio/
-│       │   ├── PortfolioApplication.java
-│       │   ├── config/          (Security, CORS, JWT properties, beans)
-│       │   ├── controller/      (REST controllers)
-│       │   ├── dto/
-│       │   ├── entity/
-│       │   ├── exception/       (GlobalExceptionHandler)
-│       │   ├── repository/
-│       │   ├── security/        (JWT service + filter)
-│       │   └── service/
-│       └── resources/
-│           └── application.yml
-└── frontend/                 ← Angular 19 app
-    ├── angular.json
-    ├── package.json
-    ├── public/
-    │   ├── favicon.ico
-    │   └── Niral_Patel_Resume.pdf   ← Replace with your real resume PDF
-    └── src/
-        ├── environments/
-        ├── app/
-        │   ├── app.config.ts
-        │   ├── app.routes.ts
-        │   ├── models/
-        │   ├── services/
-        │   └── components/    (navbar, home, about, skills, projects, experience, resume, contact, footer)
-        ├── index.html
-        └── styles.scss
-```
+---
 
-## Prerequisites
-
-- **Java 17+** and **Maven 3.9+**
-- **Node.js 20+** and **npm**
-- **PostgreSQL 14+** (default) or **MySQL 8+**
-
-## Step-by-step: run locally
-
-### 1. Database (PostgreSQL)
-
-Create a database:
-
-```bash
-createdb portfolio_db
-```
-
-Apply schema and seed data:
-
-```bash
-psql -d portfolio_db -f sql/schema.sql
-psql -d portfolio_db -f sql/sample-data.sql
-```
-
-Edit `backend/src/main/resources/application.yml` if your username, password, or database name differ.
-
-For **first-time only** with Hibernate `ddl-auto: update`, you may instead start the backend once against an empty database, then run `sample-data.sql` to insert rows (avoid running seed twice or you will duplicate rows unless you truncate first).
-
-### 2. Backend
-
-```bash
-cd backend
-mvn spring-boot:run
-```
-
-API base URL: `http://localhost:8080`
-
-Default **admin** credentials (change in `application.yml` before any public deployment):
-
-- Username: `admin`
-- Password: `changeme`
-
-JWT login: `POST /api/auth/login` (see `docs/API.md`).
-
-### 3. Frontend
-
-Development uses `src/environments/environment.development.ts` (via `angular.json` `fileReplacements`) so the app calls `http://localhost:8080`.
-
-```bash
-cd frontend
-npm install
-npm start
-```
-
-Open `http://localhost:4200`.
-
-### 4. MySQL instead of PostgreSQL
-
-1. Create database `portfolio_db` and run `sql/schema-mysql.sql` + `sql/sample-data-mysql.sql`.
-2. Start the backend with the MySQL profile:
-
-```bash
-cd backend
-mvn spring-boot:run -Dspring-boot.run.profiles=mysql
-```
-
-Ensure `application.yml` MySQL block credentials match your server.
-
-### 5. Production build (frontend)
-
-Update `frontend/src/environments/environment.ts` with your real **API base URL** (no trailing slash), then:
-
-```bash
-cd frontend
-npm run build
-```
-
-Static output: `frontend/dist/portfolio-frontend/browser/`.
-
-## API documentation
-
-See [docs/API.md](docs/API.md) for endpoints, payloads, and error format.
-
-Summary:
-
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/projects` | List projects |
-| GET | `/api/skills` | List skills |
-| GET | `/api/experience` | List experience |
-| POST | `/api/contact` | Save contact message |
-| POST | `/api/auth/login` | Optional admin JWT |
-| GET | `/api/admin/ping` | Example protected route |
-
-## Deployment suggestions
-
-### Backend
-
-- **Container:** Multi-stage Docker build (Maven build → JRE 17 slim image), pass datasource URL and credentials as **environment variables** or Spring Cloud Config; never commit secrets.
-- **Managed databases:** AWS RDS, Azure Database for PostgreSQL/MySQL, or Neon/Supabase (Postgres). Set `ddl-auto` to `validate` or use **Flyway/Liquibase** for migrations in production.
-- **HTTPS:** Terminate TLS at a load balancer (ALB, Nginx, Caddy) and enforce secure cookies if you add browser sessions later.
-- **Secrets:** Rotate `jwt.secret` and `admin.password`; use at least a 256-bit random secret for HS256.
-
-### Frontend
-
-- **Static hosting:** AWS S3 + CloudFront, Azure Static Web Apps, Netlify, Vercel, or GitHub Pages.
-- **Same-origin API:** Put Angular static files and `/api` reverse-proxy to Spring Boot on one domain to simplify CORS (update `portfolio.cors.allowed-origins` to your domain).
-- **Environment:** Keep `environment.ts` production `apiUrl` aligned with your deployed API (or use a build-time `--configuration` with `fileReplacements`).
-
-### Full stack on one VPS
-
-- Nginx serves `dist/.../browser` and proxies `/api` to `localhost:8080`.
-- Run Spring Boot as a **systemd** service or behind **Docker Compose** alongside Postgres.
-
-## Customization checklist
-
-- [ ] Replace `frontend/public/Niral_Patel_Resume.pdf` with your real resume.
-- [ ] Adjust copy on **Home**, **About**, and **Resume** if you want different wording than the prompt defaults.
-- [ ] Update seed SQL or edit rows in the database for projects, skills, and experience.
-- [ ] Set production `apiUrl` and CORS origins.
-- [ ] Change JWT secret and admin password.
-
-## License
-
-Private portfolio project — use and modify freely for your own site.
+*If you're a recruiter or hiring manager, the easiest way to evaluate this is to [open the live site](https://niral-portfolio-five.vercel.app) and send me a note from the contact form. Thanks for taking a look.*
