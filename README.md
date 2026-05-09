@@ -11,8 +11,6 @@
 
 Java Full Stack Developer based in Barrie, Ontario — three years building secure REST APIs, microservices, and data-driven web apps with Spring Boot, Angular / React, and AWS. Open to mid-level full-stack roles in Canada (remote or Ontario-based).
 
-📧 [niralpatel988@gmail.com](mailto:niralpatel988@gmail.com) · 💼 [LinkedIn](https://www.linkedin.com/) · 💻 [GitHub](https://github.com/Niral32)
-
 ## What this site has
 
 - **About / Skills / Experience** — my background and the technologies I work with day-to-day.
@@ -41,6 +39,3 @@ A few decisions that show how I think about real-world software:
 - **Wildcard CORS for preview deploys** — every Vercel preview URL hits the API without any redeploy.
 - **Zero-cost production deploy** — runs on entirely free tiers (Render + Vercel + Supabase) and stays warm via a 5-minute uptime ping.
 
----
-
-*If you're a recruiter or hiring manager, the easiest way to evaluate this is to [open the live site](https://niral-portfolio-five.vercel.app) and send me a note from the contact form. Thanks for taking a look.*
