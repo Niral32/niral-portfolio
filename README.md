@@ -1,6 +1,37 @@
-# Niral Patel — Personal Portfolio (Angular + Spring Boot)
+# Niral Patel — Personal Portfolio
 
-Full-stack portfolio site: **Angular** frontend, **Spring Boot 3** backend, **PostgreSQL** or **MySQL**, REST APIs, optional **JWT admin** login, and a **contact form** persisted to SQL.
+> Full-stack personal site I designed, built, and deployed end-to-end.
+> Java / Spring Boot REST API · Angular 19 SPA · PostgreSQL on Supabase · Render + Vercel + GitHub Actions.
+
+**🌐 Live site:** [niral-portfolio-five.vercel.app](https://niral-portfolio-five.vercel.app)
+**🔌 Live API:** [portfolio-backend-b0tq.onrender.com/api/skills](https://portfolio-backend-b0tq.onrender.com/api/skills)
+
+---
+
+## What it does
+
+- **Public site** — recruiter-facing pages for About, Skills, Experience, Projects, Blog, Contact, and a Cal.com booking widget.
+- **Admin dashboard** — JWT-secured `/admin` area to add/edit projects, skills, experience, blog posts (with cover image upload), and toggle the contact + booking sections on or off without redeploying.
+- **Contact pipeline** — visitor messages are persisted to Postgres and emailed to me via Spring Mail (Gmail SMTP).
+- **Resume & profile photo** — both stored as BLOBs in Postgres and served through the API.
+
+## Tech stack
+
+| Layer | Stack |
+|-------|-------|
+| Frontend | Angular 19 (standalone components, signals), TypeScript, SCSS |
+| Backend  | Spring Boot 3.2, Spring Security + JWT, Spring Data JPA, Hibernate 6 |
+| Database | PostgreSQL (prod on Supabase) / MySQL (local fallback) |
+| Hosting  | Render (backend, Docker), Vercel (frontend), Supabase (DB) |
+| CI / DevOps | GitHub Actions, Docker, Render Blueprint (`render.yaml`) |
+
+## Highlights worth a closer look
+
+- **Cross-database compatibility** — single codebase runs on Postgres or MySQL by switching a Spring profile. Used `@JdbcTypeCode(SqlTypes.LONGVARCHAR)` and `LONGVARBINARY` for portable BLOB/CLOB columns.
+- **Stateless JWT auth** — custom `JwtAuthenticationFilter` with HS256, configurable secret + TTL via env vars.
+- **Pooler-aware JDBC** — disabled server-side prepared statements (`prepareThreshold=0`) for compatibility with Supabase's transaction-mode PgBouncer.
+- **Wildcard CORS for preview deploys** — `setAllowedOriginPatterns` lets every Vercel preview URL hit the API without redeploying.
+- **Zero-cost deploy** — Spring backend on Render free tier kept warm with a 5-min UptimeRobot ping; Angular static build on Vercel.
 
 ## Repository layout
 
